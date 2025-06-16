@@ -1,8 +1,13 @@
 global:
   scrape_interval: 15s
-
 scrape_configs:
   - job_name: 'springboot'
-    metrics_path: '/actuator/prometheus'
+    metrics_path: '/adoption/actuator/prometheus'
     static_configs:
-      - targets: ['host.docker.internal:8080']
+      - targets: ['app:8089'] # Spring Boot app service name and port
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080'] # cAdvisor service
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['prometheus:9090'] # Prometheus itself
