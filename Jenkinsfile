@@ -27,13 +27,18 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                // Exemple : Déploiement d'un JAR sur un serveur ou conteneur
-                sh 'java -jar target/adoptionproject-0.0.1-SNAPSHOT.jar'
-                // Ou déploiement vers un serveur distant (AWS, Azure, etc.)
-                // Exemple avec AWS : scp target/adoptionproject-0.0.1-SNAPSHOT.jar user@server:/path
+                // Construire l'image Docker
+                sh 'docker build -t adoptionproject .'
+                // Taguer l'image
+                sh 'docker tag adoptionproject <votre-utilisateur>/adoptionproject:latest'
+                // Connecter à Docker Hub (utilise credentials si possible)
+                sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                // Pousser l'image
+                sh 'docker push <votre-utilisateur>/adoptionproject:latest'
+                // Lancer le conteneur (optionnel)
+                sh 'docker run -d -p 8080:8080 <votre-utilisateur>/adoptionproject:latest'
             }
         }
-    }
     post {
         success {
             echo 'Pipeline terminé avec succès !'
